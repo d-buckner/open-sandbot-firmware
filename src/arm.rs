@@ -1,8 +1,9 @@
-use crate::{coordinate_queue, transmission_channel};
-use crate::{coordinate::PolarCoordinate, stepper_pair::StepperPairPins};
+use crate::messages::status;
 use crate::stepper_pair::StepperPair;
+use crate::{coordinate::PolarCoordinate, stepper_pair::StepperPairPins};
+use crate::{coordinate_queue, transmission_channel};
 use core::f64::consts::PI;
-use libm::{acos, fabs, pow, round};
+use libm::{acos, pow, round};
 
 const MAIN_PULLEY_TEETH: f64 = 90.0;
 const MOTOR_PULLEY_TEETH: f64 = 16.0;
@@ -27,8 +28,8 @@ struct StepPosition {
 
 impl StepPosition {
     pub fn get_total_steps(&self) -> i64 {
-        let primary_total_steps = abs(self.primary_steps);
-        let secondary_total_steps = abs(self.secondary_steps);
+        let primary_total_steps = self.primary_steps.abs();
+        let secondary_total_steps = self.secondary_steps.abs();
         primary_total_steps + secondary_total_steps
     }
 
@@ -62,9 +63,12 @@ impl Arm<'_> {
 
         if delta_step_position.get_total_steps() == 0 {
             // already at target position
-            transmission_channel::send("STATUS IDLE").await;
+            transmission_channel::send(status::IDLE).await;
             return;
         }
+
+        // notify that movement is starting
+        transmission_channel::send(status::MOVING).await;
 
         self.stepper_pair
             .move_to(
@@ -73,7 +77,7 @@ impl Arm<'_> {
             )
             .await;
         self.step_position = target_step_position;
-        transmission_channel::send("STATUS IDLE").await;
+        transmission_channel::send(status::IDLE).await;
     }
 }
 
@@ -93,8 +97,4 @@ fn get_target_step_position(position: &PolarCoordinate) -> StepPosition {
 
 fn degrees(radians: f64) -> f64 {
     radians * (180.0 / PI)
-}
-
-fn abs(val: i64) -> i64 {
-    fabs(val as f64) as i64
 }

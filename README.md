@@ -12,3 +12,17 @@ The API expects messages to be formatted as `METHOD[ ARG0][ ARG1]\n`. All messag
 The API also emits the status messages
 - `STATUS IDLE`: the sandbot is idle and not currently moving
 - `STATUS MOVING` the sandbot is currently moving to a target position
+- `ERROR INVALID_UTF8`: command contains invalid UTF-8
+- `ERROR MISSING_ARGS`: command is missing required arguments
+- `ERROR INVALID_NUMBERS`: arguments could not be parsed as numbers
+
+### Testing
+```bash
+# Install just (one time)
+cargo install just
+
+# Run tests
+just test-host     # Run integration tests
+just test-embedded # Check embedded build
+just test-all      # Run all tests
+```

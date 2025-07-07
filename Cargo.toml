@@ -26,3 +26,11 @@ cortex-m = { version = "0.7.6" }
 embassy-rp = { version = "0.1.0", features = ["defmt", "unstable-pac", "time-driver", "critical-section-impl"] }
 embedded-alloc = "0.5.1"
 libm = "0.2.8"
+heapless = "0.8.0"
+
+[[bin]]
+name = "open-sandbot-firmware"
+
+[package.metadata.scripts]
+test-host = "rustc --test tests/integration_tests.rs && ./integration_tests"
+test-clean = "rm -f integration_tests"

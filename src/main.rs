@@ -1,29 +1,27 @@
 #![no_std]
 #![no_main]
 
+use arm::arm_task;
 use embassy_executor::Spawner;
 use embassy_rp::bind_interrupts;
 use embassy_rp::peripherals::UART0;
 use embassy_rp::uart;
-use embassy_rp::{
-    gpio::AnyPin,
-    Peripheral,
-};
+use embassy_rp::{gpio::AnyPin, Peripheral};
 use stepper_pair::StepperPairPins;
 use uart_reader::reader_task;
 use uart_writer::writer_task;
-use arm::arm_task;
 use {defmt_rtt as _, panic_probe as _};
 
 mod arm;
+mod command;
 mod coordinate;
+mod coordinate_queue;
+mod messages;
 mod stepper;
 mod stepper_pair;
-mod command;
-mod coordinate_queue;
+mod transmission_channel;
 mod uart_reader;
 mod uart_writer;
-mod transmission_channel;
 
 bind_interrupts!(struct Irqs {
     UART0_IRQ => uart::InterruptHandler<UART0>;

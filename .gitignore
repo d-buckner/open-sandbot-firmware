@@ -1,2 +1,5 @@
 /target
 /.idea
+
+# Test artifacts
+integration_tests
